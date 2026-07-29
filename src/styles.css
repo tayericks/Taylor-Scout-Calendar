@@ -71,3 +71,19 @@
   .print-many-weeks .event .title{font-size:5.8px!important}
   .print-many-weeks .event .kicker,.print-many-weeks .event .meta,.print-many-weeks .event .key,.print-many-weeks .activity-row,.print-many-weeks .note-event{font-size:4.8px!important}
 }
+
+/* v7 unified Taylor Scout branding and reliable 11x17 printing */
+:root{--nav:#10283b;--teal:#169a9a;--teal-soft:#e7f5f3;--line:#cfdde3;--muted:#647b89}
+.brand{display:flex;align-items:center;gap:9px!important;letter-spacing:.07em!important}.brand-pin{width:30px;height:30px;border-radius:10px;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center;font-size:19px}.brand b{display:block;font-size:13px}.brand small{display:block;color:#67cec8;font-size:7px;letter-spacing:.18em;margin-top:2px}
+@page{size:17in 11in landscape;margin:.16in}
+@media print{
+ html,body{width:auto!important;height:auto!important;overflow:visible!important;background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .main{padding:0!important;width:100%!important}.calendar-shell{width:100%!important;max-width:none!important;height:auto!important;margin:0!important;overflow:visible!important;border:1px solid #333!important;display:block!important}
+ .weekday-row,.week{width:100%!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;min-width:0!important}
+ .weekday-row{display:grid!important;height:auto!important}.weekday{font-size:6.5px!important;padding:2px 3px!important}
+ .week{display:grid!important;height:auto!important;min-height:0!important;grid-template-rows:auto 1fr!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .week-label{height:auto!important;line-height:1.15!important;padding:2px 3px!important;font-size:5.8px!important}
+ .day{height:auto!important;min-height:.72in!important;overflow:visible!important}.day-head{height:auto!important;line-height:1.1!important;font-size:5.5px!important;padding:1px 2px!important}
+ .shoot-zone{min-height:.38in!important;height:auto!important;padding:2px!important;gap:1px!important;overflow:visible!important}.activity-zone{overflow:visible!important}
+ .event{padding:1px 2px!important;border-left-width:2px!important;line-height:1.05!important;overflow:visible!important}.event .kicker{font-size:4.4px!important}.event .title{font-size:5.6px!important}.event .meta,.event .key,.activity-row,.note-event{font-size:4.7px!important;line-height:1.08!important}.activity-row,.note-event{padding:1px 2px!important}
+}
