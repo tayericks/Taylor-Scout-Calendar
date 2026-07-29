@@ -13,3 +13,8 @@ Run:
 npm install
 npm run dev
 ```
+
+
+## Update 8.0.0
+- Unified Taylor Scout logo and dashboard navigation.
+- Interface and print refinements requested July 29, 2026.
