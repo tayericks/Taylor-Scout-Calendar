@@ -1,0 +1,203 @@
+import './styles.css';
+
+const STORAGE_KEY='taylorScoutCalendarV5';
+const uid=()=>crypto.randomUUID();
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+const weekday=d=>d.toLocaleDateString('en-US',{weekday:'short'});
+const sundayOf=d=>addDays(d,-d.getDay());
+
+const E=(id,episode,unit,set,location,shootStart,shootEnd,keyIds=[],extra={})=>({id,episode,unit,set,scenes:'',location,address:'',contact:'',phone:'',shootStart,shootEnd:shootEnd||shootStart,prepStart:'',prepEnd:'',holdStart:'',holdEnd:'',strikeStart:'',strikeEnd:'',keyIds,notes:'',...extra});
+const initial={
+  start:'2026-07-26', weeks:24,
+  sourceVersion:'El Dorado Prep/Wrap Calendar 07.28.26',
+  keys:[
+    {id:'k1',name:'Taylor Erickson',role:'KALM'},
+    {id:'k2',name:'Rabeyah',role:'Key'},
+    {id:'k3',name:'Megan',role:'Key'},
+    {id:'k4',name:'Rich',role:'Key'},
+    {id:'k5',name:'Gil',role:'Key'},
+    {id:'k6',name:'Joaquin',role:'Key'},
+    {id:'k7',name:'Ron',role:'Key'},
+    {id:'k8',name:'Damien',role:'Key'},
+    {id:'k9',name:'Mario',role:'Key'},
+    {id:'k10',name:'Celia',role:'Key'},
+    {id:'k11',name:'Kris',role:'Key'},
+    {id:'k12',name:'Daniel',role:'Key'},
+    {id:'k13',name:'George',role:'Key'},
+    {id:'k14',name:'Shanell',role:'Key'},
+    {id:'k15',name:'Shasta',role:'Key'}
+  ],
+  events:[
+    E('e001','BLOCK 1','Main Unit','Ext. Hoover Dam','Gillibrand Pit','2026-07-27','2026-07-27',['k5','k6','k7'],{holdStart:'2026-07-26',holdEnd:'2026-07-26',strikeStart:'2026-07-30',strikeEnd:'2026-07-31',notes:'VFX Scanning'}),
+    E('e002','BLOCK 1','2nd Unit','Ext. Hoover Dam','Gillibrand Pit','2026-07-28','2026-07-29',['k5','k6','k7'],{holdStart:'2026-08-02',holdEnd:'2026-08-02',strikeStart:'2026-08-03',strikeEnd:'2026-08-04'}),
+    E('e003','303','Main Unit',"Int. Lucy & Max's House / Bedroom / Living Room",'Radford - Stage 21','2026-07-28','2026-07-29',['k10']),
+    E('e004','303','Main Unit','Ext. Movie For Screen','Radford - Stage 22','2026-07-28','2026-07-28',['k10']),
+    E('e005','303','Main Unit','Int. EHQ Enclave - Base - Complex / Operating Room Dream','Radford - Stage 22','2026-07-29','2026-07-29',['k10']),
+    E('e006','304','Main Unit',"Int. Vault 32 - Atrium / Overseer's Office",'LA North','2026-07-30','2026-07-30',['k9']),
+    E('e007','304','Main Unit','Int. Vault 33 / Vault 32 - Inter-Vault Chamber','LA North','2026-07-31','2026-07-31',['k9']),
+    E('e008','304','Main Unit',"Int. Vault 33 - Overseer's Office",'LA North','2026-08-03','2026-08-03',['k9']),
+    E('e009','303','Main Unit','Ext. Salt Lake City - Outskirt of City / Ext. Pine Tree Forest','Darling Ranch','2026-08-03','2026-08-03',['k1','k7'],{address:'1773 Darling Ave, Frazier Park, CA 93225',contact:'Karen Bryden',phone:'661-510-6366',prepStart:'2026-07-30',prepEnd:'2026-07-31',holdStart:'2026-08-01',holdEnd:'2026-08-03',strikeStart:'2026-08-04',strikeEnd:'2026-08-04'}),
+    E('e010','303','Main Unit','Ext. Great Library - Rose Garden / Ext. Great Library','Expo Rose Garden','2026-08-04','2026-08-04',['k2','k6','k7'],{prepStart:'2026-07-31',prepEnd:'2026-08-03',holdStart:'2026-08-01',holdEnd:'2026-08-03',strikeStart:'2026-08-05',strikeEnd:'2026-08-06'}),
+    E('e011','305','Main Unit','Int. Great Library - Flashback','Natural History Museum','2026-08-04','2026-08-04',['k8']),
+    E('e012','303','Main Unit','Int. Great Library','Natural History Museum','2026-08-05','2026-08-05',['k8','k6','k7'],{prepStart:'2026-08-04',prepEnd:'2026-08-04',strikeStart:'2026-08-05',strikeEnd:'2026-08-07'}),
+    E('e013','BLOCK 1','Main Unit','Int. Federal Building / Taxi / Driving','Castaic DWR Building','2026-08-05','2026-08-05',['k3'],{notes:'Mini Move'}),
+    E('e014','303','Main Unit','Int. BOS Dirigible - Cargo Hold / Int. Caswennan Prison','Radford Stage 21','2026-08-06','2026-08-06',['k10'],{notes:'VFX Scanning'}),
+    E('e015','303','2nd Unit','Ext. Great Library - Rose Garden','Expo Rose Garden','2026-08-06','2026-08-06',['k2','k6','k7']),
+    E('e016','BLOCK 1','Main Unit','Int. Lucky 38 Casino - Penthouse','Volume Stage','2026-08-07','2026-08-07',['k4'],{prepStart:'2026-07-27',prepEnd:'2026-08-06',holdStart:'2026-07-26',holdEnd:'2026-08-07',strikeStart:'2026-08-12',strikeEnd:'2026-08-14'}),
+    E('e017','303','Main Unit','Int. Caswennan Prison','Radford - Stage 21','2026-08-10','2026-08-10',['k10']),
+    E('e018','305','Main Unit','Ext. Great Library - Rose Garden','Expo Rose Garden','2026-08-10','2026-08-10',['k8','k2','k7'],{prepStart:'2026-08-10',prepEnd:'2026-08-11',strikeStart:'2026-08-12',strikeEnd:'2026-08-12'}),
+    E('e019','303','Main Unit','Ext. Salt Lake City / Movie Palace / Theater / Interior','Fox Theater, Pomona','2026-08-11','2026-08-14',['k12','k6','k9'],{prepStart:'2026-08-09',prepEnd:'2026-08-11',holdStart:'2026-08-15',holdEnd:'2026-08-17',strikeStart:'2026-08-17',strikeEnd:'2026-08-18'}),
+    E('e020','303','Main Unit','Ext. Wasteland - Hill / Legion Camp - Approach / Overpass','Rocky Peak','2026-08-12','2026-08-12',['k15','k7'],{prepStart:'2026-08-11',prepEnd:'2026-08-11',strikeStart:'2026-08-12',strikeEnd:'2026-08-12'}),
+    E('e021','303','Main Unit','Ext. Lower / Upper Griffith Park / Helipad / Hog Back Trail','Griffith Park','2026-08-17','2026-08-17',['k14','k4','k6'],{prepStart:'2026-08-14',prepEnd:'2026-08-17',holdStart:'2026-08-15',holdEnd:'2026-08-16',strikeStart:'2026-08-18',strikeEnd:'2026-08-18',notes:'VFX Scanning'}),
+    E('e022','BLOCK 1','Main Unit','Ext. Mid-Road / Lower Griffith Park / Switchback','Griffith Park - Joe Klass / Mineral Wells','2026-08-17','2026-08-17',['k14','k4'],{notes:'VFX Scanning'}),
+    E('e023','304','Main Unit','Ext. Riverside Farmstead / Farmstead Courtyard','Santa Clarita Movie Ranch - Cabin','2026-08-18','2026-08-19',['k11'],{strikeStart:'2026-08-20',strikeEnd:'2026-08-20'}),
+    E('e024','304','Main Unit','Ext. Wasteland - Southern Utah','Santa Clarita Movie Ranch - Road','2026-08-19','2026-08-19',['k11'],{notes:'Cabin move'}),
+    E('e025','BLOCK 1','Main Unit','Ext. Vault-Tec Tower / Portico / Pasture','LA Center Studios - Lobby and Boylston','2026-08-20','2026-08-20',['k13'],{prepStart:'2026-08-16',prepEnd:'2026-08-19',holdStart:'2026-08-20',holdEnd:'2026-08-23',strikeStart:'2026-08-24',strikeEnd:'2026-08-27',notes:'Mini Move'}),
+    E('e026','BLOCK 1','Main Unit','Int. Hollywood Talent Agency','LA Center Studios - Ken Johnson Office','2026-08-20','2026-08-20',['k13'],{prepStart:'2026-08-18',prepEnd:'2026-08-19',strikeStart:'2026-08-20',strikeEnd:'2026-08-20'}),
+    E('e027','BLOCK 1','Main Unit','Int. Vault-Tec Tower Lobby / Ext. Vault-Tec Tower / Ext. Sky','LA Center Studios','2026-08-21','2026-08-21',['k13'],{notes:'Mini Move'}),
+    E('e028','305','Main Unit','Gold Vertibird','Volume Stage','2026-08-24','2026-08-24',['k4']),
+    E('e029','306','Main Unit','Int. Security Clearance Taphouse - Utah',"Barone's",'2026-08-25','2026-08-25',['k3'],{prepStart:'2026-08-24',prepEnd:'2026-08-25',strikeStart:'2026-08-26',strikeEnd:'2026-08-26'}),
+    E('e030','306','Main Unit','Ext./Int. Hollywood Mansion / Pool Area','Sinatra House','2026-08-26','2026-08-27',['k2'],{prepStart:'2026-08-25',prepEnd:'2026-08-26',holdStart:'2026-08-27',holdEnd:'2026-08-30',strikeStart:'2026-08-31',strikeEnd:'2026-09-01'}),
+    E('e031','BLOCK 1','Main Unit',"Ext./Int. Sebastian's Pool House",'Quail Ranch','2026-08-26','2026-08-26',['k14'],{prepStart:'2026-08-23',prepEnd:'2026-08-25',strikeStart:'2026-08-27',strikeEnd:'2026-08-28'}),
+    E('e032','BLOCK 1','Main Unit','IE. Vertibird / Int. Vertibird / Black Vertibird','Volume Stage','2026-08-31','2026-08-31',['k4']),
+    E('e033','304','Main Unit','Ext. Wild West Town / Church / Producer Village','Sable Ranch','2026-09-01','2026-09-01',['k5']),
+    E('e034','305','Main Unit','Ext. Basecamp - Producer Trailer','Sable Ranch','2026-09-02','2026-09-02',['k5']),
+    E('e035','305','Main Unit','Ext. Robco Film Set - Desert','Sable Ranch','2026-09-03','2026-09-03',['k5']),
+    E('e036','305','Main Unit',"Int. Quintus' Chambers",'Radford TBD','2026-09-04','2026-09-04',[],{notes:'TBD Key'}),
+    E('e037','305','Main Unit','Int. Mesa Cryo Corridors','TBD','2026-09-08','2026-09-08',['k12']),
+    E('e038','305','Main Unit','Ext. Mormon Fort','Blue Cloud Ranch','2026-09-09','2026-09-09',['k13']),
+    E('e039','305','Main Unit','Int. Mormon Fort','Blue Cloud Ranch','2026-09-10','2026-09-10',['k13']),
+    E('e040','305','Travel Unit','Unit #1 Crew Travels to Mammoth','Mammoth','2026-09-21','2026-09-21',[]),
+    E('e041','305','Travel Unit','Unit #2 Crew Travels to Mammoth','Mammoth','2026-09-21','2026-09-21',[]),
+    E('e042','304 & 305','Unit #1','Ext. Wasteland - Different Country','Alabama Hills - Cyclops Rock','2026-09-22','2026-09-22',[]),
+    E('e043','304 & 305','Unit #2','Ext. Wasteland - Southern Utah','Pleasant Valley - Sad Circles, Bishop','2026-09-22','2026-09-22',[]),
+    E('e044','305','Unit #1','Ext. Wasteland / Rockies Ahead','Top of Hot Creek','2026-09-23','2026-09-23',[]),
+    E('e045','305','Unit #2','Ext. Wasteland / River Valley / Southern Utah','Bottom of Hot Creek','2026-09-23','2026-09-23',[]),
+    E('e046','305','Unit #1','Ext. Snow-Covered Mountain / Cliff Above Frozen Lake / Sunny Hillside','Mammoth Mountain - Top of Gondola','2026-09-24','2026-09-24',[]),
+    E('e047','307/308','Unit #2','Ext. Mammoth Mountain - Ski Area','Eagle Lodge - Sleepy Hollow / Manzanita Bike Path','2026-09-24','2026-09-24',[]),
+    E('e048','305','Main Unit','Ext. Snowy Hillside / Flashback','June Lake','2026-09-25','2026-09-25',[]),
+    E('e049','304','Main Unit','IE. Enclave Bunker - Lab Room','TBD','2026-10-09','2026-10-09',[]),
+    E('e050','308','Main Unit','Miniature Enclave Set','Volume Stage','2026-11-02','2026-11-06',[])
+  ]
+};
+
+let state=load();
+let editingId=null, dragId=null, selectedDay=null;
+let activeKeys=[], activeLocations=[], timelineLocation='', filters={episode:'all',unit:'all',type:'all'};
+let printRange={mode:'all',start:'',end:'',weeks:4};
+const episodePalette=['#2f6fb4','#8b5fbf','#d36d3f','#2d8b70','#b08b2f','#8a627a','#3f7f9f','#7568b5'];
+
+function load(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(saved){saved.events=saved.events.map(e=>({...e,locked:!!e.locked,eventType:e.eventType||'assignment'}));saved.notes=saved.notes||[];return saved}
+  }catch{}
+  const cloned=structuredClone(initial);cloned.events=cloned.events.map(e=>({...e,locked:false,eventType:'assignment'}));cloned.notes=[];return cloned
+}
+function autosave(msg='Draft saved'){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast(msg)}
+function keyName(id){return state.keys.find(k=>k.id===id)?.name||''}
+function datesBetween(a,b){if(!a)return[];const s=parse(a),e=parse(b||a),out=[];for(let d=s;d<=e;d=addDays(d,1))out.push(iso(d));return out}
+function eventKindOn(ev,date){if(ev.eventType==='note')return ev.shootStart===date?'note':null;if(datesBetween(ev.shootStart,ev.shootEnd).includes(date))return'shoot';if(datesBetween(ev.prepStart,ev.prepEnd).includes(date))return'prep';if(datesBetween(ev.holdStart,ev.holdEnd).includes(date))return'hold';if(datesBetween(ev.strikeStart,ev.strikeEnd).includes(date))return'strike';return null}
+function episodeColor(ep){const eps=[...new Set(state.events.filter(e=>e.eventType!=='note').map(e=>e.episode))].sort();return episodePalette[Math.max(0,eps.indexOf(ep))%episodePalette.length]}
+function eventVisible(ev,date,kind){if(filters.episode!=='all'&&ev.episode!==filters.episode)return false;if(filters.unit!=='all'&&ev.unit!==filters.unit)return false;if(filters.type!=='all'&&kind!==filters.type)return false;return true}
+function highlighted(ev){if(activeKeys.length&&!ev.keyIds?.some(k=>activeKeys.includes(k)))return false;if(activeLocations.length&&!activeLocations.includes(ev.location))return false;if(timelineLocation&&ev.location!==timelineLocation)return false;return true}
+function syncSharedLocation(ev){if(!ev.location)return;state.events.forEach(o=>{if(o.id!==ev.id&&o.location.trim().toLowerCase()===ev.location.trim().toLowerCase()){['address','contact','phone','prepStart','prepEnd','holdStart','holdEnd','strikeStart','strikeEnd'].forEach(k=>{if(ev[k])o[k]=ev[k]})}})}
+
+function render(){
+  const root=document.querySelector('#app');
+  root.innerHTML=`<div class="app"><header class="topbar"><div class="brand">◆ TAYLOR SCOUT</div><div class="page-title">PREP / WRAP CALENDAR</div><div class="top-actions">
+    <button class="btn dark" id="todayBtn">Today</button><button class="btn dark" id="addEventBtn">+ Assignment</button><button class="btn dark" id="quickNoteBtn">+ Event</button>
+    <button class="btn dark" id="keysBtn">Keys${activeKeys.length?` (${activeKeys.length})`:''}</button><button class="btn dark" id="locationsBtn">Locations</button>
+    <button class="btn dark" id="undoBtn">Undo</button><button class="btn dark" id="exportBtn">Export</button><button class="btn dark" id="printBtn">Print 11×17</button><button class="btn primary" id="saveBtn">Save</button>
+  </div></header><main class="main"><section class="hero"><div><h1>El Dorado Season 3</h1><p>${esc(state.sourceVersion)} · automatic local draft saving</p></div><div class="toolbar">${filterToolbar()}</div></section>
+  ${activeKeys.length||activeLocations.length||timelineLocation?`<div class="active-filter">Highlighting ${activeKeys.map(keyName).join(', ')}${activeKeys.length&&(activeLocations.length||timelineLocation)?' · ':''}${activeLocations.join(', ')}${timelineLocation?`Location timeline: ${esc(timelineLocation)}`:''} <button id="clearHighlight" class="mini-link">Clear</button></div>`:''}
+  <section class="calendar-shell"><div class="weekday-row">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(x=>`<div class="weekday">${x}</div>`).join('')}</div>${renderWeeks()}</section>
+  <div class="load-more"><button class="btn" id="moreWeeks">Show 4 More Weeks</button></div></main><div id="modalRoot"></div><div id="toast" class="toast hidden" aria-live="polite"></div></div>`;
+  bind();
+}
+function filterToolbar(){
+  const eps=[...new Set(state.events.map(e=>e.episode).filter(Boolean))].sort();const units=[...new Set(state.events.map(e=>e.unit).filter(Boolean))].sort();
+  return `<label>Episode<select id="filterEpisode"><option value="all">All</option>${eps.map(x=>`<option ${filters.episode===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label>
+  <label>Unit<select id="filterUnit"><option value="all">All</option>${units.map(x=>`<option ${filters.unit===x?'selected':''}>${esc(x)}</option>`).join('')}</select></label>
+  <label>Show<select id="filterType"><option value="all">Everything</option>${['shoot','prep','hold','strike','note'].map(x=>`<option value="${x}" ${filters.type===x?'selected':''}>${x[0].toUpperCase()+x.slice(1)}</option>`).join('')}</select></label>`
+}
+function renderWeeks(){let out='';const start=sundayOf(parse(state.start));for(let w=0;w<state.weeks;w++){const ws=addDays(start,w*7);if(!weekInPrint(ws)&&document.body.classList.contains('print-range'))continue;out+=`<div class="week" data-week="${iso(ws)}"><div class="week-label">${fmt(ws)} – ${fmt(addDays(ws,6))}</div>`;for(let i=0;i<7;i++){const d=addDays(ws,i);out+=renderDay(d,iso(d))}out+='</div>'}return out}
+function weekInPrint(ws){if(printRange.mode==='all')return true;if(printRange.mode==='weeks'){const s=sundayOf(parse(state.start));const e=addDays(s,(printRange.weeks*7)-1);return ws<=e&&addDays(ws,6)>=s}if(printRange.mode==='range'){const s=parse(printRange.start),e=parse(printRange.end);return addDays(ws,6)>=s&&ws<=e}return true}
+function renderDay(d,ds){
+  const shoots=[],acts=[],notes=[];state.events.forEach(ev=>{const kind=eventKindOn(ev,ds);if(!kind||!eventVisible(ev,ds,kind))return;if(kind==='shoot')shoots.push(ev);else if(kind==='note')notes.push(ev);else acts.push({ev,kind})});
+  const today=iso(new Date())===ds?' today':'';
+  const allForDay=[...shoots,...acts.map(x=>x.ev),...notes];
+  const hasActiveKey=activeKeys.length&&allForDay.some(ev=>ev.keyIds?.some(k=>activeKeys.includes(k)));
+  const hasActiveLocation=activeLocations.length&&allForDay.some(ev=>activeLocations.includes(ev.location));
+  const hasTimeline=timelineLocation&&allForDay.some(ev=>ev.location===timelineLocation);
+  const hasHighlight=hasActiveKey||hasActiveLocation||hasTimeline;
+  const highlightOn=activeKeys.length||activeLocations.length||timelineLocation;
+  const dim=highlightOn&&!hasHighlight?' dimmed':'';
+  const match=hasHighlight?' highlight-match':'';
+  return `<div class="day${today}${dim}${match}" data-date="${ds}"><div class="day-head"><span>${d.getDate()} ${d.toLocaleDateString('en-US',{month:'long'})}</span><button class="mini add-day" data-date="${ds}">＋</button></div><div class="shoot-zone" data-drop-date="${ds}">${notes.map(n=>renderNote(n)).join('')}${shoots.map(ev=>renderEvent(ev,ds)).join('')}</div><div class="activity-zone">${acts.map(x=>renderActivity(x.ev,x.kind)).join('')}</div></div>`
+}
+function renderEvent(ev,date){const c=episodeColor(ev.episode),dim=(activeKeys.length||activeLocations.length||timelineLocation)&&!highlighted(ev)?' dimmed-card':'';return `<article class="event shoot${dim}" draggable="${!ev.locked}" data-id="${ev.id}" style="--episode:${c}"><div class="event-actions">${ev.locked?'🔒':''}<button class="mini copy-event" data-id="${ev.id}" title="Copy">⧉</button><button class="mini delete-event" data-id="${ev.id}">×</button></div><div class="kicker">EP ${esc(ev.episode)} · ${esc(ev.unit)}</div><div class="title">${esc(ev.set)}</div><div class="meta">${esc(ev.location)}${ev.scenes?` · ${esc(ev.scenes)}`:''}</div><div class="key">${ev.keyIds.map(keyName).join(' / ')}</div></article>`}
+function renderActivity(ev,kind){const dim=(activeKeys.length||activeLocations.length||timelineLocation)&&!highlighted(ev)?' dimmed-card':'';const c=episodeColor(ev.episode);return `<div class="activity-row ${kind}${dim}" data-id="${ev.id}" style="--episode:${c}"><strong>${kind}:</strong> ${esc(ev.location||ev.set)} <span>(${ev.keyIds.map(keyName).join(', ')})</span></div>`}
+function renderNote(ev){return `<div class="note-event" data-id="${ev.id}"><strong>${esc(ev.set||'Production Event')}</strong>${ev.notes?`<span>${esc(ev.notes)}</span>`:''}</div>`}
+function bind(){
+  $('#addEventBtn').onclick=()=>openEvent();$('#quickNoteBtn').onclick=()=>openNote();$('#saveBtn').onclick=()=>autosave('Saved');$('#todayBtn').onclick=()=>{state.start=iso(sundayOf(new Date()));render()};$('#moreWeeks').onclick=()=>{state.weeks+=4;render()};
+  $('#keysBtn').onclick=openKeyHighlight;$('#locationsBtn').onclick=openLocationHighlight;$('#undoBtn').onclick=undoLast;$('#exportBtn').onclick=openExport;$('#printBtn').onclick=openPrint;$('#clearHighlight')?.addEventListener('click',()=>{activeKeys=[];activeLocations=[];timelineLocation='';render()});
+  $('#filterEpisode').onchange=e=>{filters.episode=e.target.value;render()};$('#filterUnit').onchange=e=>{filters.unit=e.target.value;render()};$('#filterType').onchange=e=>{filters.type=e.target.value;render()};
+  $$('.add-day').forEach(b=>b.onclick=e=>{e.stopPropagation();openQuickAdd(b.dataset.date)});$$('.day').forEach(d=>d.onclick=e=>{if(e.target.closest('button,.event,.activity-row,.note-event'))return;openDaySummary(d.dataset.date)});
+  $$('.event').forEach(el=>{el.onclick=e=>{if(e.target.closest('button'))return;const ev=state.events.find(x=>x.id===el.dataset.id);timelineLocation=ev?.location||'';activeKeys=[];activeLocations=[];render()};el.ondblclick=e=>{e.preventDefault();openEvent(el.dataset.id)};el.ondragstart=()=>{dragId=el.dataset.id;pushUndo();el.classList.add('dragging')};el.ondragend=()=>{dragId=null;el.classList.remove('dragging')}});
+  $$('.copy-event').forEach(b=>b.onclick=e=>{e.stopPropagation();copyAssignment(b.dataset.id)});$$('.delete-event').forEach(b=>b.onclick=e=>{e.stopPropagation();pushUndo();state.events=state.events.filter(x=>x.id!==b.dataset.id);autosave('Assignment deleted');render()});
+  $$('[data-drop-date]').forEach(z=>{z.ondragover=e=>{e.preventDefault();z.classList.add('drop-highlight')};z.ondragleave=()=>z.classList.remove('drop-highlight');z.ondrop=e=>{e.preventDefault();z.classList.remove('drop-highlight');moveEvent(dragId,z.dataset.dropDate)}})
+}
+function pushUndo(){state.undo=state.undo||[];state.undo.push(JSON.stringify({events:state.events,notes:state.notes}));if(state.undo.length>25)state.undo.shift()}
+function undoLast(){const s=state.undo?.pop();if(!s)return toast('Nothing to undo');const old=JSON.parse(s);state.events=old.events;state.notes=old.notes||[];autosave('Undone');render()}
+function moveEvent(id,newShoot){const ev=state.events.find(x=>x.id===id);if(!ev||ev.locked)return toast('Assignment is locked');const old=parse(ev.shootStart),next=parse(newShoot),delta=Math.round((next-old)/86400000);['shootStart','shootEnd','prepStart','prepEnd','holdStart','holdEnd','strikeStart','strikeEnd'].forEach(k=>{if(ev[k])ev[k]=iso(addDays(parse(ev[k]),delta))});syncSharedLocation(ev);autosave('Assignment moved');render()}
+function copyAssignment(id){const src=state.events.find(e=>e.id===id);if(!src)return;const c=structuredClone(src);c.id=uid();c.set=`${c.set} — Copy`;c.locked=false;state.events.push(c);autosave('Assignment copied');openEvent(c.id)}
+function openQuickAdd(date){modal(`<h2>Add to ${fullDate(date)}</h2><div class="choice-grid"><button class="choice" data-kind="assignment">Shoot Assignment</button><button class="choice" data-kind="note">Production Event / Note</button><button class="choice" data-kind="prep">Prep Only</button><button class="choice" data-kind="hold">Hold Only</button><button class="choice" data-kind="strike">Strike Only</button></div>`,root=>{$$('.choice',root).forEach(b=>b.onclick=()=>{closeModal();if(b.dataset.kind==='note')openNote(date);else openEvent(null,date,b.dataset.kind)})})}
+function openEvent(id=null,defaultDate='',preset='shoot'){
+  editingId=id;const ev=id?structuredClone(state.events.find(x=>x.id===id)):{id:uid(),episode:'',unit:'Main Unit',set:'',scenes:'',location:'',address:'',contact:'',phone:'',shootStart:preset==='shoot'?defaultDate:'',shootEnd:preset==='shoot'?defaultDate:'',prepStart:preset==='prep'?defaultDate:'',prepEnd:preset==='prep'?defaultDate:'',holdStart:preset==='hold'?defaultDate:'',holdEnd:preset==='hold'?defaultDate:'',strikeStart:preset==='strike'?defaultDate:'',strikeEnd:preset==='strike'?defaultDate:'',keyIds:[],notes:'',locked:false,eventType:'assignment'};
+  const schedule={prep:new Set(datesBetween(ev.prepStart,ev.prepEnd)),shoot:new Set(datesBetween(ev.shootStart,ev.shootEnd)),hold:new Set(datesBetween(ev.holdStart,ev.holdEnd)),strike:new Set(datesBetween(ev.strikeStart,ev.strikeEnd))};
+  let tool=preset||'shoot',painting=false,paintStart='';
+  const anchors=[ev.prepStart,ev.shootStart,ev.holdStart,ev.strikeStart,defaultDate].filter(Boolean).sort();
+  const painterStart=sundayOf(addDays(parse(anchors[0]||state.start),-7));
+  const painterDates=Array.from({length:42},(_,i)=>iso(addDays(painterStart,i)));
+  const painterHTML=()=>`<div class="schedule-painter"><div class="painter-tools">${['prep','shoot','hold','strike','erase'].map(k=>`<button type="button" class="paint-tool ${tool===k?'active':''}" data-tool="${k}">${k[0].toUpperCase()+k.slice(1)}</button>`).join('')}</div><p class="painter-help">Choose a type, then click and drag across dates. Clicking a shoot card later highlights this complete location timeline.</p><div class="paint-weekdays">${['S','M','T','W','T','F','S'].map(x=>`<span>${x}</span>`).join('')}</div><div class="paint-grid">${painterDates.map(ds=>{const kinds=['prep','shoot','hold','strike'].filter(k=>schedule[k].has(ds));return `<button type="button" class="paint-day ${kinds.map(k=>'is-'+k).join(' ')}" data-date="${ds}" title="${fullDate(ds)}"><span>${parse(ds).getDate()}</span><small>${kinds.map(k=>k[0].toUpperCase()).join('')}</small></button>`}).join('')}</div><div class="schedule-summary">${['prep','shoot','hold','strike'].map(k=>`<span><strong>${k}:</strong> ${rangeLabel(schedule[k])}</span>`).join('')}</div></div>`;
+  modal(`<h2>${id?'Edit':'Add'} Assignment</h2><div class="editor-tabs"><button class="editor-tab active" data-tab="details">Details</button><button class="editor-tab" data-tab="schedule">Schedule Paint</button></div><div id="detailsPanel"><div class="form-grid">${field('Episode','episode',ev.episode)}${selectField('Unit','unit',['Main Unit','2nd Unit','Splinter Unit','Aerial Unit','VFX Unit','Travel Unit','Custom'],ev.unit)}${field('Set name','set',ev.set)}${field('Scene numbers','scenes',ev.scenes)}${field('Physical location','location',ev.location)}${field('Address','address',ev.address)}${field('Contact','contact',ev.contact)}${field('Phone','phone',ev.phone)}${multiKeys(ev.keyIds)}<div class="field"><label>Lock assignment</label><select id="f_locked"><option value="false">Unlocked</option><option value="true" ${ev.locked?'selected':''}>Locked</option></select></div><div class="field full"><label>Notes</label><textarea id="f_notes">${esc(ev.notes||'')}</textarea></div></div></div><div id="schedulePanel" class="hidden">${painterHTML()}</div><input type="hidden" id="f_shootStart"><input type="hidden" id="f_shootEnd"><input type="hidden" id="f_prepStart"><input type="hidden" id="f_prepEnd"><input type="hidden" id="f_holdStart"><input type="hidden" id="f_holdEnd"><input type="hidden" id="f_strikeStart"><input type="hidden" id="f_strikeEnd"><div class="modal-actions"><button class="btn" id="cancelModal">Cancel</button><button class="btn" id="copyModal">Copy</button><button class="btn" id="budgetModal">Create Budget</button><button class="btn primary" id="saveEvent">Save Assignment</button></div>`,root=>{
+    const syncHidden=()=>{['prep','shoot','hold','strike'].forEach(k=>{const vals=[...schedule[k]].sort();$(`#f_${k}Start`).value=vals[0]||'';$(`#f_${k}End`).value=vals.at(-1)||''})};
+    const repaint=()=>{const panel=$('#schedulePanel');panel.innerHTML=painterHTML();bindPainter();syncHidden()};
+    const applyRange=(a,b)=>{if(tool==='erase'){const dates=datesBetween(a,b);Object.values(schedule).forEach(set=>dates.forEach(d=>set.delete(d)))}else{schedule[tool]=new Set(datesBetween(a,b))}repaint()};
+    const bindPainter=()=>{$$('.paint-tool',root).forEach(b=>b.onclick=()=>{tool=b.dataset.tool;repaint()});$$('.paint-day',root).forEach(b=>{b.onpointerdown=e=>{e.preventDefault();painting=true;paintStart=b.dataset.date;b.setPointerCapture?.(e.pointerId)};b.onpointerenter=()=>{if(painting)b.classList.add('paint-preview')};b.onpointerup=e=>{if(!painting)return;painting=false;applyRange(paintStart,b.dataset.date);b.releasePointerCapture?.(e.pointerId)}})};
+    $$('.editor-tab',root).forEach(b=>b.onclick=()=>{$$('.editor-tab',root).forEach(x=>x.classList.toggle('active',x===b));$('#detailsPanel').classList.toggle('hidden',b.dataset.tab!=='details');$('#schedulePanel').classList.toggle('hidden',b.dataset.tab!=='schedule')});
+    syncHidden();bindPainter();$('#cancelModal').onclick=closeModal;$('#copyModal').onclick=()=>{saveEvent(ev.id,true)};$('#budgetModal').onclick=()=>openBudgetPreview(ev);$('#saveEvent').onclick=()=>saveEvent(ev.id,false)
+  })
+}
+function rangeLabel(set){const vals=[...set].sort();if(!vals.length)return'—';if(vals.length===1)return fmt(parse(vals[0]));return `${fmt(parse(vals[0]))}–${fmt(parse(vals.at(-1)))}`}
+function saveEvent(id,copy){const get=x=>$(`#f_${x}`)?.value||'';const ev={id:copy?uid():id,episode:get('episode'),unit:get('unit'),set:get('set'),scenes:get('scenes'),location:get('location'),address:get('address'),contact:get('contact'),phone:get('phone'),shootStart:get('shootStart'),shootEnd:get('shootEnd'),prepStart:get('prepStart'),prepEnd:get('prepEnd'),holdStart:get('holdStart'),holdEnd:get('holdEnd'),strikeStart:get('strikeStart'),strikeEnd:get('strikeEnd'),keyIds:$$('.key-check:checked').map(x=>x.value),notes:get('notes'),locked:get('locked')==='true',eventType:'assignment'};if(!ev.episode||!ev.set){alert('Episode and set name are required.');return}if(!ev.shootStart&&!ev.prepStart&&!ev.holdStart&&!ev.strikeStart){alert('Paint at least one schedule date.');return}pushUndo();const i=state.events.findIndex(x=>x.id===id);if(!copy&&i>=0)state.events[i]=ev;else state.events.push(ev);syncSharedLocation(ev);closeModal();autosave(copy?'Assignment copied':'Assignment saved');render()}
+
+function openNote(date=''){modal(`<h2>Production Event / Note</h2><div class="form-grid">${field('Title','noteTitle','')}${selectField('Type','noteType',['Travel','Holiday','Dark Day','Company Move','Tech Scout','VFX Scanning','Permit Deadline','Construction Deadline','Other'],'Other')}${dateField('Date','noteDate',date)}<div class="field full"><label>Details</label><textarea id="f_noteDetails"></textarea></div></div><div class="modal-actions"><button class="btn" id="cancelModal">Cancel</button><button class="btn primary" id="saveNote">Save Event</button></div>`,()=>{$('#cancelModal').onclick=closeModal;$('#saveNote').onclick=()=>{const title=$('#f_noteTitle').value||$('#f_noteType').value;const d=$('#f_noteDate').value;if(!d)return;state.events.push({id:uid(),episode:'',unit:'',set:title,location:'',shootStart:d,shootEnd:d,keyIds:[],notes:$('#f_noteDetails').value,eventType:'note',locked:false});closeModal();autosave('Event saved');render()}})}
+function openDaySummary(date){selectedDay=date;const rows=[];state.events.forEach(ev=>{const kind=eventKindOn(ev,date);if(kind)rows.push({ev,kind})});const order={shoot:0,prep:1,hold:2,strike:3,note:4};rows.sort((a,b)=>order[a.kind]-order[b.kind]);modal(`<h2>${fullDate(date)}</h2><div class="day-summary">${rows.length?rows.map(({ev,kind})=>`<div class="summary-row"><span class="summary-kind ${kind}">${kind}</span><div><strong>${esc(ev.set||ev.notes)}</strong><div>${esc(ev.location)}${ev.unit?` · ${esc(ev.unit)}`:''}</div><small>${ev.keyIds?.map(keyName).join(', ')}</small></div><button class="btn small edit-summary" data-id="${ev.id}">Edit</button></div>`).join(''):'<p>No activity scheduled.</p>'}</div><div class="modal-actions"><button class="btn" id="closeSummary">Close</button><button class="btn primary" id="addFromSummary">+ Add</button></div>`,root=>{$('#closeSummary').onclick=closeModal;$('#addFromSummary').onclick=()=>{closeModal();openQuickAdd(date)};$$('.edit-summary',root).forEach(b=>b.onclick=()=>{closeModal();openEvent(b.dataset.id)})})}
+function openKeyHighlight(){modal(`<h2>Highlight Keys</h2><p>Select one or more keys to highlight every day they are assigned.</p><div class="check-grid">${state.keys.map(k=>`<label><input type="checkbox" class="highlight-key" value="${k.id}" ${activeKeys.includes(k.id)?'checked':''}> ${esc(k.name)}</label>`).join('')}</div><div class="modal-actions"><button class="btn" id="manageKeys">Manage Keys</button><button class="btn" id="clearKeys">Clear</button><button class="btn primary" id="applyKeys">Apply</button></div>`,()=>{$('#manageKeys').onclick=openKeys;$('#clearKeys').onclick=()=>{activeKeys=[];closeModal();render()};$('#applyKeys').onclick=()=>{activeKeys=$$('.highlight-key:checked').map(x=>x.value);closeModal();render()}})}
+function openLocationHighlight(){const locs=[...new Set(state.events.map(e=>e.location).filter(Boolean))].sort();modal(`<h2>Highlight Locations</h2><div class="check-grid">${locs.map(l=>`<label><input type="checkbox" class="highlight-location" value="${esc(l)}" ${activeLocations.includes(l)?'checked':''}> ${esc(l)}</label>`).join('')}</div><div class="modal-actions"><button class="btn" id="clearLocs">Clear</button><button class="btn primary" id="applyLocs">Apply</button></div>`,()=>{$('#clearLocs').onclick=()=>{activeLocations=[];closeModal();render()};$('#applyLocs').onclick=()=>{activeLocations=$$('.highlight-location:checked').map(x=>x.value);closeModal();render()}})}
+function openKeys(){modal(`<h2>Manage Keys</h2><div id="keyList">${state.keys.map(k=>`<div class="key-edit"><input data-key-name="${k.id}" value="${esc(k.name)}"><input data-key-role="${k.id}" value="${esc(k.role)}"><button class="btn danger remove-key" data-id="${k.id}">Delete</button></div>`).join('')}</div><button class="btn" id="addKey">+ Add Key</button><div class="modal-actions"><button class="btn" id="cancelModal">Cancel</button><button class="btn primary" id="saveKeys">Save Keys</button></div>`,()=>{$('#cancelModal').onclick=closeModal;$('#addKey').onclick=()=>{state.keys.push({id:uid(),name:'New Key',role:'Key'});openKeys()};$$('.remove-key').forEach(b=>b.onclick=()=>{state.keys=state.keys.filter(k=>k.id!==b.dataset.id);openKeys()});$('#saveKeys').onclick=()=>{state.keys=state.keys.map(k=>({...k,name:$(`[data-key-name="${k.id}"]`).value,role:$(`[data-key-role="${k.id}"]`).value}));closeModal();autosave('Keys updated');render()}})}
+function openPrint(){modal(`<h2>Print One-Page 11×17 Calendar</h2><p>Choose a focused date range. Four weeks is recommended for readable one-page printing.</p><div class="print-options"><label><input type="radio" name="pm" value="weeks" checked> Starting from calendar start, print <select id="printWeeks"><option>1</option><option>2</option><option selected>4</option><option>5</option><option>6</option><option>8</option></select> weeks</label><label><input type="radio" name="pm" value="range"> Custom date range</label><div class="form-grid">${dateField('Start','printStart',state.start)}${dateField('End','printEnd',iso(addDays(parse(state.start),27)))}</div><div class="print-note" id="printNote">Recommended: 1–4 weeks. More weeks will use progressively smaller text.</div></div><div class="modal-actions"><button class="btn" id="cancelModal">Cancel</button><button class="btn primary" id="doPrint">Print One 11×17 Page</button></div>`,()=>{$('#cancelModal').onclick=closeModal;$('#doPrint').onclick=()=>{const mode=$('input[name="pm"]:checked').value;const weeks=Number($('#printWeeks').value);printRange={mode,weeks,start:$('#f_printStart').value,end:$('#f_printEnd').value};closeModal();document.body.classList.add('print-range','print-one-page');render();const count=$$('.week').length||1;document.documentElement.style.setProperty('--print-week-count',count);document.body.classList.toggle('print-many-weeks',count>4);setTimeout(()=>{window.print();document.body.classList.remove('print-range','print-one-page','print-many-weeks');document.documentElement.style.removeProperty('--print-week-count');render()},220)}})}
+function openExport(){modal(`<h2>Export Calendar</h2><div class="choice-grid"><button class="choice" id="exportJSON">JSON Backup</button><button class="choice" id="exportCSV">CSV Schedule</button><button class="choice" id="episodeBudget">Create Episode Budget Package</button></div><div class="modal-actions"><button class="btn" id="cancelModal">Close</button></div>`,()=>{$('#cancelModal').onclick=closeModal;$('#exportJSON').onclick=()=>download('taylor-scout-calendar.json',JSON.stringify(state,null,2),'application/json');$('#exportCSV').onclick=()=>download('taylor-scout-calendar.csv',toCSV(),'text/csv');$('#episodeBudget').onclick=openEpisodeBudget})}
+function openEpisodeBudget(){const eps=[...new Set(state.events.map(e=>e.episode).filter(Boolean))].sort();modal(`<h2>Create Budget from Episode</h2><label class="field"><span>Episode</span><select id="budgetEpisode">${eps.map(e=>`<option>${esc(e)}</option>`).join('')}</select></label><div class="modal-actions"><button class="btn" id="cancelModal">Cancel</button><button class="btn primary" id="makeBudget">Preview Budget Package</button></div>`,()=>{$('#cancelModal').onclick=closeModal;$('#makeBudget').onclick=()=>{const ep=$('#budgetEpisode').value;const events=state.events.filter(e=>e.episode===ep&&e.eventType!=='note');modal(`<h2>Episode ${esc(ep)} Budget Package</h2><p>This creates the shared episode/location foundation for Budget.</p><div class="budget-list">${events.map(e=>`<div><strong>${esc(e.set)}</strong><span>${esc(e.location)}</span><small>Shoot ${e.shootStart||'—'} · Prep ${e.prepStart||'—'} · Hold ${e.holdStart||'—'} · Strike ${e.strikeStart||'—'}</small></div>`).join('')}</div><div class="modal-actions"><button class="btn" id="closeBudget">Close</button><button class="btn primary" id="downloadBudget">Export JSON</button></div>`,()=>{$('#closeBudget').onclick=closeModal;$('#downloadBudget').onclick=()=>download(`episode-${ep}-budget-package.json`,JSON.stringify({episode:ep,locations:events},null,2),'application/json')})}})}
+function openBudgetPreview(ev){modal(`<h2>Create Budget Record</h2><p>${esc(ev.episode)} · ${esc(ev.set)} · ${esc(ev.location)}</p><div class="budget-list"><div><strong>Prep</strong><span>${ev.prepStart||'—'} to ${ev.prepEnd||'—'}</span></div><div><strong>Shoot</strong><span>${ev.shootStart||'—'} to ${ev.shootEnd||'—'}</span></div><div><strong>Hold</strong><span>${ev.holdStart||'—'} to ${ev.holdEnd||'—'}</span></div><div><strong>Strike</strong><span>${ev.strikeStart||'—'} to ${ev.strikeEnd||'—'}</span></div></div><div class="modal-actions"><button class="btn" id="closeBudget">Close</button><button class="btn primary" id="downloadBudget">Export Budget Record</button></div>`,()=>{$('#closeBudget').onclick=closeModal;$('#downloadBudget').onclick=()=>download(`${ev.episode}-${slug(ev.location)}-budget.json`,JSON.stringify(ev,null,2),'application/json')})}
+function toCSV(){const h=['Episode','Unit','Set','Scenes','Location','Address','Shoot Start','Shoot End','Prep Start','Prep End','Hold Start','Hold End','Strike Start','Strike End','Keys','Locked'];return [h.join(','),...state.events.filter(e=>e.eventType!=='note').map(e=>h.map(k=>csv(({Episode:e.episode,Unit:e.unit,Set:e.set,Scenes:e.scenes,Location:e.location,Address:e.address,'Shoot Start':e.shootStart,'Shoot End':e.shootEnd,'Prep Start':e.prepStart,'Prep End':e.prepEnd,'Hold Start':e.holdStart,'Hold End':e.holdEnd,'Strike Start':e.strikeStart,'Strike End':e.strikeEnd,Keys:e.keyIds.map(keyName).join('; '),Locked:e.locked})[k])).join(','))].join('\n')}
+function download(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function field(label,id,val){return `<div class="field"><label>${label}</label><input id="f_${id}" value="${esc(val||'')}"></div>`}
+function selectField(label,id,opts,val){return `<div class="field"><label>${label}</label><select id="f_${id}">${opts.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('')}</select></div>`}
+function dateField(label,id,val){return `<div class="field"><label>${label}</label><span class="date-wrap"><input type="date" id="f_${id}" value="${val||''}"></span></div>`}
+function multiKeys(selected){return `<div class="field full"><label>Assigned keys</label><div class="check-grid">${state.keys.map(k=>`<label><input class="key-check" type="checkbox" value="${k.id}" ${selected.includes(k.id)?'checked':''}> ${esc(k.name)}</label>`).join('')}</div></div>`}
+function modal(html,onReady){const root=$('#modalRoot');root.innerHTML=`<div class="modal-backdrop"><div class="modal">${html}</div></div>`;onReady?.(root)}
+function closeModal(){$('#modalRoot').innerHTML=''}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),1600)}
+function fullDate(s){return parse(s).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}
+function csv(v){return `"${String(v??'').replaceAll('"','""')}"`}
+function slug(s){return String(s||'location').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+function esc(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function $(sel,root=document){return root.querySelector(sel)}function $$(sel,root=document){return [...root.querySelectorAll(sel)]}
+render();
