@@ -1,20 +1,13 @@
-# Taylor Scout Calendar v5
+# Taylor Scout Calendar v10 — Connected Tool Switcher
 
-Changes:
-- Smaller working-calendar typography
-- Prep, hold, and strike rows use their episode color at 70% opacity
-- Key/location highlighting outlines matching days and fades unrelated days
-- Repaired compact top toolbar
-- Print Entire Calendar, selected weeks, or date range fitted to one 11×17 landscape page
-- Keeps the imported El Dorado schedule and all v4 editing, drag/drop, filters, keys, location sharing, budget export, undo, auto-draft, and export tools
+Adds the permanent Calendar / Budget / Bible switcher while preserving the shared show and location context.
 
-Run:
-```bash
-npm install
-npm run dev
-```
+Environment variables:
 
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_HUB_URL=https://www.taylorscout.com`
+- `VITE_BUDGET_URL=https://budget.taylorscout.com`
+- `VITE_BIBLE_URL=https://bible.taylorscout.com`
 
-## Update 8.0.0
-- Unified Taylor Scout logo and dashboard navigation.
-- Interface and print refinements requested July 29, 2026.
+The old Export button is replaced by a compact More panel with live connection status, direct tool links, Calendar Backup, and CSV export.

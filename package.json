@@ -1,7 +1,7 @@
 {
   "name": "taylor-scout-calendar-v3",
   "private": true,
-  "version": "8.0.0",
+  "version": "9.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "vite": "^7.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4"
   }
 }
