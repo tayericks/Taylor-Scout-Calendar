@@ -124,3 +124,36 @@ button,input,select,textarea{border-radius:7px!important}.status-badge,.accessPi
 
 /* Taylor Scout v2.4 header normalization */
 .topbar,.suite-topbar,.suite-global-bar{height:60px!important;min-height:60px!important}.topbar .brand,.suite-brand,.suite-global-brand{min-width:220px!important}.topbar .brand svg,.suite-brand svg,.suite-global-brand svg{width:25px!important;height:31px!important}.topbar .brand b,.suite-brand b,.suite-global-brand b{font-size:15px!important}.topbar .brand small,.suite-brand small,.suite-global-brand small{font-size:7px!important;letter-spacing:.28em!important;color:#55d7cf!important}
+
+
+/* Taylor Scout LOCKED design system v2.5 — do not alter without explicit unlock */
+:root{
+  --ts-header-h:60px;--ts-sidebar-w:250px;--ts-navy:#061f33;--ts-navy-2:#0b2e46;
+  --ts-teal:#2fb5b2;--ts-teal-dark:#198e8b;--ts-bg:#f3f6f8;--ts-surface:#fff;
+  --ts-border:#d6e0e7;--ts-border-dark:#27465d;--ts-text:#102a3b;--ts-muted:#607180;
+  --ts-radius:8px;--ts-control-radius:7px;--ts-shadow:0 4px 14px rgba(6,31,51,.055);
+  --ts-font:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+html,body,#root,#app{font-family:var(--ts-font)!important;color:var(--ts-text)}
+body{background:var(--ts-bg)!important}
+button,input,select,textarea{font-family:var(--ts-font)!important;border-radius:var(--ts-control-radius)!important}
+.panel,.hero,.hero-card,.section-card,.summary-card,.project-card,.table-wrap,.modal,.modalCard,.showWideCard,.calendar-shell,.request-modal,.location-modal{
+  border:1px solid var(--ts-border)!important;border-radius:var(--ts-radius)!important;box-shadow:var(--ts-shadow)!important
+}
+.topbar,.suite-topbar,.suite-global-bar,.ts-canonical-header{
+  height:var(--ts-header-h)!important;min-height:var(--ts-header-h)!important;background:var(--ts-navy)!important;
+  color:#fff!important;border:0!important;border-bottom:1px solid var(--ts-border-dark)!important;box-shadow:none!important;
+  position:sticky!important;top:0!important;z-index:100!important
+}
+.tool-switcher{display:flex!important;align-items:center!important;gap:2px!important;padding:3px!important;background:#09263b!important;border:1px solid #29485f!important;border-radius:8px!important;box-shadow:none!important}
+.tool-switcher .tool-tab,.tool-tab{border:0!important;background:transparent!important;color:#d4e1ea!important;padding:7px 11px!important;border-radius:6px!important;font-size:12px!important;font-weight:750!important;line-height:1.1!important}
+.tool-switcher .tool-tab.active,.tool-tab.active{background:var(--ts-teal)!important;color:#fff!important}
+.status-badge,.count,.accessPill{border-radius:999px!important}
+.sidebar,.suite-sidebar,.showSidebar{background:var(--ts-navy)!important;border-right:1px solid #17364c!important;box-shadow:none!important}
+.sidebar button,.suite-sidebar button,.showSidebar button{box-shadow:none!important}
+.primary,.new-bible,.sidebar-new,.new-budget-btn,.newBtn{background:var(--ts-teal)!important;border-color:var(--ts-teal)!important;color:#fff!important}
+.primary:hover,.new-bible:hover,.sidebar-new:hover,.new-budget-btn:hover,.newBtn:hover{background:var(--ts-teal-dark)!important}
+@media print{.topbar,.suite-topbar,.suite-global-bar,.ts-canonical-header,.sidebar,.suite-sidebar,.showSidebar{display:none!important}}
+
+/* Calendar v11.5 locked shell */
+.topbar{display:grid!important;grid-template-columns:var(--ts-sidebar-w) 1fr auto!important;padding:0 14px!important}.brand.brand-home{height:60px!important;display:flex!important;align-items:center!important;padding:0!important;border:0!important;background:transparent!important;color:#fff!important}.page-title{position:absolute!important;left:50%!important;transform:translateX(-50%)!important;font-size:14px!important;letter-spacing:.03em!important;color:#fff!important;white-space:nowrap!important}.page-title .cloud-status{display:none!important}.top-actions{justify-self:end!important;display:flex!important;align-items:center!important;gap:7px!important}.top-actions .btn{min-height:34px!important;padding:7px 10px!important}.hero,.calendar-shell{border-radius:8px!important}
