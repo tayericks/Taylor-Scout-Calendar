@@ -1,0 +1,2 @@
+Taylor Scout Calendar v11.7
+Stable shared location IDs are written back to assignment records for connected-module navigation.

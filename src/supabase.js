@@ -19,5 +19,5 @@ export async function syncCalendarLocations(showId,events){
     set_name:e.set||'', location_name:e.location||'Untitled Location', address:e.address||'', contact_name:e.contact||'', contact_phone:e.phone||'',
     status:'Scheduled', source:'calendar', notes:e.notes||'', metadata:{calendar_event_id:e.id,unit:e.unit||'',scenes:e.scenes||'',daily_sets:e.dailySets||{},schedule:{prep_start:e.prepStart||null,prep_end:e.prepEnd||null,shoot_start:e.shootStart||null,shoot_end:e.shootEnd||null,hold_start:e.holdStart||null,hold_end:e.holdEnd||null,strike_start:e.strikeStart||null,strike_end:e.strikeEnd||null},key_ids:e.keyIds||[]}
   }));
-  if(rows.length){const {error}=await supabase.from('production_locations').upsert(rows); if(error) throw error;}
+  if(rows.length){const {data,error}=await supabase.from('production_locations').upsert(rows).select('id,metadata'); if(error) throw error;return data||[];}return[];
 }
