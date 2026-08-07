@@ -1,0 +1,5 @@
+Taylor Scout Calendar v11.8 — Manager acceptance fixes
+
+- Reusing the same physical location on another episode no longer copies prep/hold/strike schedule dates between assignments.
+- Shared physical details (address/contact/phone) can still follow the location name.
+- Shared location IDs remain assignment-specific for exact cross-module navigation.

@@ -124,7 +124,7 @@ function eventKindOn(ev,date){if(ev.eventType==='note')return ev.shootStart===da
 function episodeColor(ep){const eps=[...new Set(state.events.filter(e=>e.eventType!=='note').map(e=>e.episode))].sort();return episodePalette[Math.max(0,eps.indexOf(ep))%episodePalette.length]}
 function eventVisible(ev,date,kind){if(filters.episode!=='all'&&ev.episode!==filters.episode)return false;if(filters.unit!=='all'&&ev.unit!==filters.unit)return false;if(filters.type!=='all'&&kind!==filters.type)return false;return true}
 function highlighted(ev){if(activeKeys.length&&!ev.keyIds?.some(k=>activeKeys.includes(k)))return false;if(activeLocations.length&&!activeLocations.includes(ev.location))return false;if(timelineLocation&&ev.location!==timelineLocation)return false;return true}
-function syncSharedLocation(ev){if(!ev.location)return;state.events.forEach(o=>{if(o.id!==ev.id&&o.location.trim().toLowerCase()===ev.location.trim().toLowerCase()){['address','contact','phone','prepStart','prepEnd','holdStart','holdEnd','strikeStart','strikeEnd'].forEach(k=>{if(ev[k])o[k]=ev[k]})}})}
+function syncSharedLocation(ev){if(!ev.location)return;state.events.forEach(o=>{if(o.id!==ev.id&&o.location.trim().toLowerCase()===ev.location.trim().toLowerCase()){['address','contact','phone'].forEach(k=>{if(ev[k])o[k]=ev[k]})}})}
 
 function render(){
   const root=document.querySelector('#app');
