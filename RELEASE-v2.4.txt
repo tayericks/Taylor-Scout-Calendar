@@ -1,0 +1,6 @@
+Taylor Scout Unified Shell v2.4
+
+- Canonical 60px Taylor Scout top bar
+- Uniform logo, show title, connected status, and module switcher
+- Consistent 1px borders and 8px panel corners
+- Standalone repository build: no monorepo/Core imports
