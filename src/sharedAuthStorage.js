@@ -11,24 +11,30 @@ function readCookie(name) {
 }
 function writeCookie(name, value, maxAge = 60 * 60 * 24 * 365) {
   const attrs = ['Path=/', `Max-Age=${maxAge}`, 'SameSite=Lax'];
-  if (location.protocol === 'https:') attrs.push('Secure');
-  const domain = cookieDomain(); if (domain) attrs.push(`Domain=${domain}`);
+  if (window.location.protocol === 'https:') attrs.push('Secure');
+  const domain = cookieDomain();
+  if (domain) attrs.push(`Domain=${domain}`);
   document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; ${attrs.join('; ')}`;
 }
 function deleteCookie(name) {
   const attrs = ['Path=/', 'Max-Age=0', 'SameSite=Lax'];
-  if (location.protocol === 'https:') attrs.push('Secure');
-  const domain = cookieDomain(); if (domain) attrs.push(`Domain=${domain}`);
+  if (window.location.protocol === 'https:') attrs.push('Secure');
+  const domain = cookieDomain();
+  if (domain) attrs.push(`Domain=${domain}`);
   document.cookie = `${encodeURIComponent(name)}=; ${attrs.join('; ')}`;
 }
 export function createSharedCookieStorage() {
   const chunkSize = 3000;
   const countKey = key => `${key}__chunks`;
-  const chunkKey = (key, i) => `${key}__${i}`;
+  const chunkKey = (key, index) => `${key}__${index}`;
   const removeCookies = key => {
     const count = Number(readCookie(countKey(key)) || 0);
     for (let i = 0; i < Math.max(count, 12); i += 1) deleteCookie(chunkKey(key, i));
     deleteCookie(countKey(key));
+    const legacyCount = Number(readCookie(`${key}.chunks`) || 0);
+    for (let i = 0; i < Math.max(legacyCount, 12); i += 1) deleteCookie(`${key}.${i}`);
+    deleteCookie(`${key}.chunks`);
+    deleteCookie(key);
   };
   return {
     getItem(key) {
@@ -38,17 +44,25 @@ export function createSharedCookieStorage() {
         for (let i = 0; i < count; i += 1) value += readCookie(chunkKey(key, i)) || '';
         if (value) return value;
       }
-      const localValue = localStorage.getItem(key);
-      if (localValue) { this.setItem(key, localValue); return localValue; }
+      const localValue = window.localStorage.getItem(key);
+      if (localValue) {
+        this.setItem(key, localValue);
+        return localValue;
+      }
       return null;
     },
     setItem(key, value) {
-      const text = String(value ?? ''); removeCookies(key);
-      const chunks = []; for (let i = 0; i < text.length; i += chunkSize) chunks.push(text.slice(i, i + chunkSize));
+      const text = String(value ?? '');
+      removeCookies(key);
+      const chunks = [];
+      for (let i = 0; i < text.length; i += chunkSize) chunks.push(text.slice(i, i + chunkSize));
       writeCookie(countKey(key), String(chunks.length));
-      chunks.forEach((chunk, i) => writeCookie(chunkKey(key, i), chunk));
-      localStorage.setItem(key, text);
+      chunks.forEach((chunk, index) => writeCookie(chunkKey(key, index), chunk));
+      window.localStorage.setItem(key, text);
     },
-    removeItem(key) { removeCookies(key); localStorage.removeItem(key); }
+    removeItem(key) {
+      removeCookies(key);
+      window.localStorage.removeItem(key);
+    },
   };
 }

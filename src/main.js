@@ -1,5 +1,9 @@
 import { configured, getShowId, getSession, loadCalendar, saveCalendar, subscribeCalendar, syncCalendarLocations } from './supabase.js';
+import { mountTaylorScoutCore } from '../../../packages/core/browser.js';
 import './styles.css';
+
+
+mountTaylorScoutCore({ toolId: 'calendar' });
 
 const STORAGE_KEY='taylorScoutCalendarV5';
 
