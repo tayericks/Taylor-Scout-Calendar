@@ -164,3 +164,20 @@ button,input,select,textarea{font-family:var(--ts-font)!important;border-radius:
 .calendar-hero{display:grid!important;grid-template-columns:minmax(260px,1fr) auto!important;gap:10px 18px!important;align-items:end!important;padding:14px 16px!important;border:1px solid var(--ts-border)!important;border-radius:8px!important;background:#fff!important;margin:0 0 10px!important}.calendar-hero-title .eyebrow{font-size:9px;font-weight:850;letter-spacing:.14em;color:#168e89;margin-bottom:3px}.calendar-hero h1{margin:0!important;font-size:22px!important;color:#10283b!important}.calendar-hero p{margin:3px 0 0!important;font-size:11px!important;color:#60788b!important}.calendar-hero .toolbar{justify-self:end!important}.calendar-commandbar{grid-column:1/-1;display:flex;gap:7px;flex-wrap:wrap;padding-top:9px;border-top:1px solid var(--ts-border)}.calendar-commandbar .btn{background:#fff!important;color:#10283b!important;border:1px solid var(--ts-border)!important;border-radius:8px!important;min-height:34px!important;padding:7px 11px!important}.main{padding-top:12px!important}.weekday-row{top:60px!important}.active-filter{top:60px!important}
 @media(max-width:980px){.topbar{grid-template-columns:auto 1fr!important}.topbar .top-actions{overflow-x:auto!important;max-width:100%!important}.calendar-hero{grid-template-columns:1fr!important}.calendar-hero .toolbar{justify-self:start!important}}
 .topbar{position:sticky!important}.topbar:after{content:''!important;position:absolute;left:50%;top:50%;width:30px;height:36px;transform:translate(-50%,-50%);background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 74 92'%3E%3Cpath fill='%23c9f0ea' d='M37 3C18 3 5 17 5 36c0 22 17 40 32 53 15-13 32-31 32-53C69 17 56 3 37 3Z'/%3E%3Cpath fill='%23061f33' d='M16 39l15-13 8 7 10-10 12 14-12-8-10 10-8-7-15 7Z'/%3E%3C/svg%3E")}
+
+
+/* v11.8 calendar grid alignment and expanded day capacity */
+@media screen{
+  .calendar-shell .weekday-row{
+    position:static!important;
+    top:auto!important;
+    z-index:auto!important;
+    margin:0!important;
+  }
+  .calendar-shell .day{
+    min-height:340px!important;
+  }
+  .calendar-shell .shoot-zone{
+    min-height:210px!important;
+  }
+}
