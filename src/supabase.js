@@ -6,6 +6,8 @@ export const configured = Boolean(url && key);
 export const supabase = configured ? createClient(url, key, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:createSharedCookieStorage()}}) : null;
 export const getShowId = () => { const p = new URLSearchParams(location.search); return p.get('show') || p.get('showId') || ''; };
 export async function getSession(){ if(!configured) return null; const {data,error}=await supabase.auth.getSession(); if(error) throw error; return data.session; }
+const calendarTokens=new Map();
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const scheduleOf=e=>({prep_start:e.prepStart||null,prep_end:e.prepEnd||null,shoot_start:e.shootStart||null,shoot_end:e.shootEnd||null,hold_start:e.holdStart||null,hold_end:e.holdEnd||null,strike_start:e.strikeStart||null,strike_end:e.strikeEnd||null});
 const eventLink=e=>({event_id:e.id,episode:e.episode||null,unit:e.unit||'',set:e.set||'',scenes:e.scenes||'',daily_sets:e.dailySets||{},schedule:scheduleOf(e),key_ids:e.keyIds||[]});
 function eventIndex(locations){const map=new Map();for(const row of locations||[]){if(row.metadata?.calendar_event_id)map.set(row.metadata.calendar_event_id,row.id);for(const entry of row.metadata?.calendar_events||[]){if(entry?.event_id)map.set(entry.event_id,row.id)}}return map}
@@ -14,12 +16,12 @@ export async function loadCalendar(showId){
     supabase.from('tool_documents').select('payload,revision,updated_at').eq('show_id',showId).eq('tool_key','calendar').maybeSingle(),
     supabase.from('production_locations').select('id,metadata').eq('show_id',showId)
   ]);
-  if(docError) throw docError;if(locationsError) throw locationsError;if(!doc?.payload) return doc;
+  if(docError) throw docError;if(locationsError) throw locationsError;if(doc?.updated_at)calendarTokens.set(showId,doc.updated_at);if(!doc?.payload) return doc;
   const byEvent=eventIndex(locations);
   const events=Array.isArray(doc.payload.events)?doc.payload.events.map(e=>({...e,locationId:e.locationId||byEvent.get(e.id)||''})):doc.payload.events;
   return {...doc,payload:{...doc.payload,events}};
 }
-export async function saveCalendar(showId,payload){ const {data,error}=await supabase.from('tool_documents').upsert({show_id:showId,tool_key:'calendar',payload},{onConflict:'show_id,tool_key'}).select('revision,updated_at').single(); if(error) throw error; return data; }
+export async function saveCalendar(showId,payload){const{data:current,error:loadError}=await supabase.from('tool_documents').select('payload,revision,updated_at').eq('show_id',showId).eq('tool_key','calendar').maybeSingle();if(loadError)throw loadError;const known=calendarTokens.get(showId)||'';if(current&&same(current.payload,payload)){calendarTokens.set(showId,current.updated_at);return current}if(current&&(!known||current.updated_at!==known))throw new Error('Calendar changed in another session. Reload before saving so newer schedule changes are not overwritten.');const{data,error}=await supabase.from('tool_documents').upsert({show_id:showId,tool_key:'calendar',payload},{onConflict:'show_id,tool_key'}).select('revision,updated_at').single();if(error)throw error;calendarTokens.set(showId,data.updated_at);return data;}
 export function subscribeCalendar(showId,callback){ if(!configured||!showId)return()=>{}; const ch=supabase.channel(`calendar:${showId}`).on('postgres_changes',{event:'*',schema:'public',table:'tool_documents',filter:`show_id=eq.${showId}`},p=>{const k=p.new?.tool_key||p.old?.tool_key||'';if(k==='calendar'||k.startsWith('location-tombstone:'))callback(p)}).on('postgres_changes',{event:'*',schema:'public',table:'production_locations',filter:`show_id=eq.${showId}`},callback).subscribe(); return()=>supabase.removeChannel(ch); }
 export async function syncCalendarLocations(showId,events){
   const assignments=events.filter(e=>e.eventType!=='note'&&(e.location||e.locationId));
