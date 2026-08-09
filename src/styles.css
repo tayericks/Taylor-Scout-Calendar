@@ -181,3 +181,20 @@ button,input,select,textarea{font-family:var(--ts-font)!important;border-radius:
     min-height:210px!important;
   }
 }
+
+
+/* v11.9 keep calendar modals fully visible above the fixed navigation */
+.modal-backdrop{
+  z-index:300!important;
+  padding:24px!important;
+  overscroll-behavior:contain;
+}
+.modal-backdrop>.modal{
+  max-height:calc(100dvh - 48px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+@media(max-width:620px){
+  .modal-backdrop{padding:12px!important}
+  .modal-backdrop>.modal{max-height:calc(100dvh - 24px)}
+}
