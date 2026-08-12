@@ -1,0 +1,1 @@
+Taylor Scout full-site release trigger for the locked Prep/Shoot/Hold/Strike calendar behavior and shared workspace context baseline. Created 2026-08-12 before full system audit.
