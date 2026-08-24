@@ -18,7 +18,7 @@ export async function loadCalendar(showId){
   ]);
   if(docError) throw docError;if(locationsError) throw locationsError;if(doc?.updated_at)calendarTokens.set(showId,doc.updated_at);if(!doc?.payload) return doc;
   const byEvent=eventIndex(locations);
-  const events=Array.isArray(doc.payload.events)?doc.payload.events.map(e=>({...e,locationId:e.locationId||byEvent.get(e.id)||''})):doc.payload.events;
+  const events=Array.isArray(doc.payload.events)?doc.payload.events.map(e=>({...e,keyIds:Array.isArray(e.keyIds)?e.keyIds:[],locationId:e.locationId||byEvent.get(e.id)||''})):doc.payload.events;
   return {...doc,payload:{...doc.payload,events}};
 }
 export async function saveCalendar(showId,payload){const{data:current,error:loadError}=await supabase.from('tool_documents').select('payload,revision,updated_at').eq('show_id',showId).eq('tool_key','calendar').maybeSingle();if(loadError)throw loadError;const known=calendarTokens.get(showId)||'';if(current&&same(current.payload,payload)){calendarTokens.set(showId,current.updated_at);return current}if(current&&(!known||current.updated_at!==known))throw new Error('Calendar changed in another session. Reload before saving so newer schedule changes are not overwritten.');const{data,error}=await supabase.from('tool_documents').upsert({show_id:showId,tool_key:'calendar',payload},{onConflict:'show_id,tool_key'}).select('revision,updated_at').single();if(error)throw error;calendarTokens.set(showId,data.updated_at);return data;}
