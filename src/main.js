@@ -1,12 +1,13 @@
 import { configured, getShowId, getSession, loadCalendar, saveCalendar, subscribeCalendar, syncCalendarLocations } from './supabase.js';
 import './styles.css';
 
-const STORAGE_KEY='taylorScoutCalendarV5';
-
 const HUB_URL=import.meta.env.VITE_HUB_URL||'https://www.taylorscout.com';
 const BUDGET_URL=import.meta.env.VITE_BUDGET_URL||'https://budget.taylorscout.com';
 const BIBLE_URL=import.meta.env.VITE_BIBLE_URL||'https://bible.taylorscout.com';
 const query=new URLSearchParams(location.search);
+const showId=getShowId();
+const activeShowName=query.get('showName')||'Production';
+const STORAGE_KEY=`taylorScoutCalendarV5:${showId||'local'}`;
 const contextLocationId=query.get('locationId')||'';
 const contextBudgetId=query.get('budgetId')||'';
 const contextBibleId=query.get('bibleId')||'';
@@ -24,81 +25,15 @@ const todayStart=()=>iso(sundayOf(new Date()));
 
 const E=(id,episode,unit,set,location,shootStart,shootEnd,keyIds=[],extra={})=>({id,episode,unit,set,scenes:'',location,address:'',contact:'',phone:'',shootStart,shootEnd:shootEnd||shootStart,prepStart:'',prepEnd:'',holdStart:'',holdEnd:'',strikeStart:'',strikeEnd:'',keyIds,notes:'',...extra});
 const initial={
-  start:'2026-07-26', weeks:24,
-  sourceVersion:'El Dorado Prep/Wrap Calendar 07.28.26',
-  keys:[
-    {id:'k1',name:'Taylor Erickson',role:'KALM'},
-    {id:'k2',name:'Rabeyah',role:'Key'},
-    {id:'k3',name:'Megan',role:'Key'},
-    {id:'k4',name:'Rich',role:'Key'},
-    {id:'k5',name:'Gil',role:'Key'},
-    {id:'k6',name:'Joaquin',role:'Key'},
-    {id:'k7',name:'Ron',role:'Key'},
-    {id:'k8',name:'Damien',role:'Key'},
-    {id:'k9',name:'Mario',role:'Key'},
-    {id:'k10',name:'Celia',role:'Key'},
-    {id:'k11',name:'Kris',role:'Key'},
-    {id:'k12',name:'Daniel',role:'Key'},
-    {id:'k13',name:'George',role:'Key'},
-    {id:'k14',name:'Shanell',role:'Key'},
-    {id:'k15',name:'Shasta',role:'Key'}
-  ],
-  events:[
-    E('e001','BLOCK 1','Main Unit','Ext. Hoover Dam','Gillibrand Pit','2026-07-27','2026-07-27',['k5','k6','k7'],{holdStart:'2026-07-26',holdEnd:'2026-07-26',strikeStart:'2026-07-30',strikeEnd:'2026-07-31',notes:'VFX Scanning'}),
-    E('e002','BLOCK 1','2nd Unit','Ext. Hoover Dam','Gillibrand Pit','2026-07-28','2026-07-29',['k5','k6','k7'],{holdStart:'2026-08-02',holdEnd:'2026-08-02',strikeStart:'2026-08-03',strikeEnd:'2026-08-04'}),
-    E('e003','303','Main Unit',"Int. Lucy & Max's House / Bedroom / Living Room",'Radford - Stage 21','2026-07-28','2026-07-29',['k10']),
-    E('e004','303','Main Unit','Ext. Movie For Screen','Radford - Stage 22','2026-07-28','2026-07-28',['k10']),
-    E('e005','303','Main Unit','Int. EHQ Enclave - Base - Complex / Operating Room Dream','Radford - Stage 22','2026-07-29','2026-07-29',['k10']),
-    E('e006','304','Main Unit',"Int. Vault 32 - Atrium / Overseer's Office",'LA North','2026-07-30','2026-07-30',['k9']),
-    E('e007','304','Main Unit','Int. Vault 33 / Vault 32 - Inter-Vault Chamber','LA North','2026-07-31','2026-07-31',['k9']),
-    E('e008','304','Main Unit',"Int. Vault 33 - Overseer's Office",'LA North','2026-08-03','2026-08-03',['k9']),
-    E('e009','303','Main Unit','Ext. Salt Lake City - Outskirt of City / Ext. Pine Tree Forest','Darling Ranch','2026-08-03','2026-08-03',['k1','k7'],{address:'1773 Darling Ave, Frazier Park, CA 93225',contact:'Karen Bryden',phone:'661-510-6366',prepStart:'2026-07-30',prepEnd:'2026-07-31',holdStart:'2026-08-01',holdEnd:'2026-08-03',strikeStart:'2026-08-04',strikeEnd:'2026-08-04'}),
-    E('e010','303','Main Unit','Ext. Great Library - Rose Garden / Ext. Great Library','Expo Rose Garden','2026-08-04','2026-08-04',['k2','k6','k7'],{prepStart:'2026-07-31',prepEnd:'2026-08-03',holdStart:'2026-08-01',holdEnd:'2026-08-03',strikeStart:'2026-08-05',strikeEnd:'2026-08-06'}),
-    E('e011','305','Main Unit','Int. Great Library - Flashback','Natural History Museum','2026-08-04','2026-08-04',['k8']),
-    E('e012','303','Main Unit','Int. Great Library','Natural History Museum','2026-08-05','2026-08-05',['k8','k6','k7'],{prepStart:'2026-08-04',prepEnd:'2026-08-04',strikeStart:'2026-08-05',strikeEnd:'2026-08-07'}),
-    E('e013','BLOCK 1','Main Unit','Int. Federal Building / Taxi / Driving','Castaic DWR Building','2026-08-05','2026-08-05',['k3'],{notes:'Mini Move'}),
-    E('e014','303','Main Unit','Int. BOS Dirigible - Cargo Hold / Int. Caswennan Prison','Radford Stage 21','2026-08-06','2026-08-06',['k10'],{notes:'VFX Scanning'}),
-    E('e015','303','2nd Unit','Ext. Great Library - Rose Garden','Expo Rose Garden','2026-08-06','2026-08-06',['k2','k6','k7']),
-    E('e016','BLOCK 1','Main Unit','Int. Lucky 38 Casino - Penthouse','Volume Stage','2026-08-07','2026-08-07',['k4'],{prepStart:'2026-07-27',prepEnd:'2026-08-06',holdStart:'2026-07-26',holdEnd:'2026-08-07',strikeStart:'2026-08-12',strikeEnd:'2026-08-14'}),
-    E('e017','303','Main Unit','Int. Caswennan Prison','Radford - Stage 21','2026-08-10','2026-08-10',['k10']),
-    E('e018','305','Main Unit','Ext. Great Library - Rose Garden','Expo Rose Garden','2026-08-10','2026-08-10',['k8','k2','k7'],{prepStart:'2026-08-10',prepEnd:'2026-08-11',strikeStart:'2026-08-12',strikeEnd:'2026-08-12'}),
-    E('e019','303','Main Unit','Ext. Salt Lake City / Movie Palace / Theater / Interior','Fox Theater, Pomona','2026-08-11','2026-08-14',['k12','k6','k9'],{prepStart:'2026-08-09',prepEnd:'2026-08-11',holdStart:'2026-08-15',holdEnd:'2026-08-17',strikeStart:'2026-08-17',strikeEnd:'2026-08-18'}),
-    E('e020','303','Main Unit','Ext. Wasteland - Hill / Legion Camp - Approach / Overpass','Rocky Peak','2026-08-12','2026-08-12',['k15','k7'],{prepStart:'2026-08-11',prepEnd:'2026-08-11',strikeStart:'2026-08-12',strikeEnd:'2026-08-12'}),
-    E('e021','303','Main Unit','Ext. Lower / Upper Griffith Park / Helipad / Hog Back Trail','Griffith Park','2026-08-17','2026-08-17',['k14','k4','k6'],{prepStart:'2026-08-14',prepEnd:'2026-08-17',holdStart:'2026-08-15',holdEnd:'2026-08-16',strikeStart:'2026-08-18',strikeEnd:'2026-08-18',notes:'VFX Scanning'}),
-    E('e022','BLOCK 1','Main Unit','Ext. Mid-Road / Lower Griffith Park / Switchback','Griffith Park - Joe Klass / Mineral Wells','2026-08-17','2026-08-17',['k14','k4'],{notes:'VFX Scanning'}),
-    E('e023','304','Main Unit','Ext. Riverside Farmstead / Farmstead Courtyard','Santa Clarita Movie Ranch - Cabin','2026-08-18','2026-08-19',['k11'],{strikeStart:'2026-08-20',strikeEnd:'2026-08-20'}),
-    E('e024','304','Main Unit','Ext. Wasteland - Southern Utah','Santa Clarita Movie Ranch - Road','2026-08-19','2026-08-19',['k11'],{notes:'Cabin move'}),
-    E('e025','BLOCK 1','Main Unit','Ext. Vault-Tec Tower / Portico / Pasture','LA Center Studios - Lobby and Boylston','2026-08-20','2026-08-20',['k13'],{prepStart:'2026-08-16',prepEnd:'2026-08-19',holdStart:'2026-08-20',holdEnd:'2026-08-23',strikeStart:'2026-08-24',strikeEnd:'2026-08-27',notes:'Mini Move'}),
-    E('e026','BLOCK 1','Main Unit','Int. Hollywood Talent Agency','LA Center Studios - Ken Johnson Office','2026-08-20','2026-08-20',['k13'],{prepStart:'2026-08-18',prepEnd:'2026-08-19',strikeStart:'2026-08-20',strikeEnd:'2026-08-20'}),
-    E('e027','BLOCK 1','Main Unit','Int. Vault-Tec Tower Lobby / Ext. Vault-Tec Tower / Ext. Sky','LA Center Studios','2026-08-21','2026-08-21',['k13'],{notes:'Mini Move'}),
-    E('e028','305','Main Unit','Gold Vertibird','Volume Stage','2026-08-24','2026-08-24',['k4']),
-    E('e029','306','Main Unit','Int. Security Clearance Taphouse - Utah',"Barone's",'2026-08-25','2026-08-25',['k3'],{prepStart:'2026-08-24',prepEnd:'2026-08-25',strikeStart:'2026-08-26',strikeEnd:'2026-08-26'}),
-    E('e030','306','Main Unit','Ext./Int. Hollywood Mansion / Pool Area','Sinatra House','2026-08-26','2026-08-27',['k2'],{prepStart:'2026-08-25',prepEnd:'2026-08-26',holdStart:'2026-08-27',holdEnd:'2026-08-30',strikeStart:'2026-08-31',strikeEnd:'2026-09-01'}),
-    E('e031','BLOCK 1','Main Unit',"Ext./Int. Sebastian's Pool House",'Quail Ranch','2026-08-26','2026-08-26',['k14'],{prepStart:'2026-08-23',prepEnd:'2026-08-25',strikeStart:'2026-08-27',strikeEnd:'2026-08-28'}),
-    E('e032','BLOCK 1','Main Unit','IE. Vertibird / Int. Vertibird / Black Vertibird','Volume Stage','2026-08-31','2026-08-31',['k4']),
-    E('e033','304','Main Unit','Ext. Wild West Town / Church / Producer Village','Sable Ranch','2026-09-01','2026-09-01',['k5']),
-    E('e034','305','Main Unit','Ext. Basecamp - Producer Trailer','Sable Ranch','2026-09-02','2026-09-02',['k5']),
-    E('e035','305','Main Unit','Ext. Robco Film Set - Desert','Sable Ranch','2026-09-03','2026-09-03',['k5']),
-    E('e036','305','Main Unit',"Int. Quintus' Chambers",'Radford TBD','2026-09-04','2026-09-04',[],{notes:'TBD Key'}),
-    E('e037','305','Main Unit','Int. Mesa Cryo Corridors','TBD','2026-09-08','2026-09-08',['k12']),
-    E('e038','305','Main Unit','Ext. Mormon Fort','Blue Cloud Ranch','2026-09-09','2026-09-09',['k13']),
-    E('e039','305','Main Unit','Int. Mormon Fort','Blue Cloud Ranch','2026-09-10','2026-09-10',['k13']),
-    E('e040','305','Travel Unit','Unit #1 Crew Travels to Mammoth','Mammoth','2026-09-21','2026-09-21',[]),
-    E('e041','305','Travel Unit','Unit #2 Crew Travels to Mammoth','Mammoth','2026-09-21','2026-09-21',[]),
-    E('e042','304 & 305','Unit #1','Ext. Wasteland - Different Country','Alabama Hills - Cyclops Rock','2026-09-22','2026-09-22',[]),
-    E('e043','304 & 305','Unit #2','Ext. Wasteland - Southern Utah','Pleasant Valley - Sad Circles, Bishop','2026-09-22','2026-09-22',[]),
-    E('e044','305','Unit #1','Ext. Wasteland / Rockies Ahead','Top of Hot Creek','2026-09-23','2026-09-23',[]),
-    E('e045','305','Unit #2','Ext. Wasteland / River Valley / Southern Utah','Bottom of Hot Creek','2026-09-23','2026-09-23',[]),
-    E('e046','305','Unit #1','Ext. Snow-Covered Mountain / Cliff Above Frozen Lake / Sunny Hillside','Mammoth Mountain - Top of Gondola','2026-09-24','2026-09-24',[]),
-    E('e047','307/308','Unit #2','Ext. Mammoth Mountain - Ski Area','Eagle Lodge - Sleepy Hollow / Manzanita Bike Path','2026-09-24','2026-09-24',[]),
-    E('e048','305','Main Unit','Ext. Snowy Hillside / Flashback','June Lake','2026-09-25','2026-09-25',[]),
-    E('e049','304','Main Unit','IE. Enclave Bunker - Lab Room','TBD','2026-10-09','2026-10-09',[]),
-    E('e050','308','Main Unit','Miniature Enclave Set','Volume Stage','2026-11-02','2026-11-06',[])
-  ]
+  start:todayStart(),
+  weeks:24,
+  sourceVersion:'New production calendar',
+  keys:[],
+  events:[],
+  notes:[]
 };
 
 let state=load();
-const showId=getShowId();
 let cloudStatus=configured?(showId?'Connecting…':'Open from Hub'):'Local only';
 let cloudTimer=null;
 let applyingRemote=false;
@@ -135,7 +70,7 @@ function syncSharedLocation(ev){if(!ev.location)return;state.events.forEach(o=>{
 
 function render(){
   const root=document.querySelector('#app');
-  root.innerHTML=`<div class="app"><header class="topbar"><button class="brand brand-home" id="hubHome"><span class="ts-logo"><svg viewBox="0 0 74 92" aria-hidden="true"><path class="pin-outline" d="M37 3C18 3 5 17 5 36c0 22 17 40 32 53 15-13 32-31 32-53C69 17 56 3 37 3Z"/><path class="mountain" d="M16 39l15-13 8 7 10-10 12 14-12-8-10 10-8-7-15 7Z"/><path class="road" d="M19 69c12-14 24-18 31-27-3 14-12 22-20 31l7 8-9 2-9-14Z"/><path class="star" d="M21 17l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z"/></svg><span class="ts-wordmark"><b>TAYLOR SCOUT</b><small>PRODUCTION TOOLS</small></span></span></button><div class="top-actions"><span class="cloud-status" id="cloudStatus">${esc(cloudStatus)}</span><button class="btn dark" id="undoBtn">↶ Undo</button><div class="tool-switcher" aria-label="Connected tools"><button class="tool-tab active" id="calendarToolBtn">Calendar</button><button class="tool-tab" id="budgetToolBtn">Budget</button><button class="tool-tab" id="bibleToolBtn">Bible</button></div><button class="btn dark" id="printBtn">⎙ Print 11×17</button><button class="btn primary" id="saveBtn">Save</button></div></header><main class="main"><section class="hero calendar-hero"><div class="calendar-hero-title"><div class="eyebrow">PREP / WRAP CALENDAR</div><h1>El Dorado Season 3</h1><p>${esc(state.sourceVersion)} · shared show calendar with automatic cloud saving</p></div><div class="toolbar">${filterToolbar()}</div><div class="calendar-commandbar"><button class="btn" id="todayBtn">Today</button><button class="btn" id="addEventBtn">＋ Assignment</button><button class="btn" id="quickNoteBtn">＋ Event</button><button class="btn" id="keysBtn">Keys${activeKeys.length?` (${activeKeys.length})`:''}</button><button class="btn" id="locationsBtn">Locations</button><button class="btn" id="moreBtn">More</button></div></section>
+  root.innerHTML=`<div class="app"><header class="topbar"><button class="brand brand-home" id="hubHome"><span class="ts-logo"><svg viewBox="0 0 74 92" aria-hidden="true"><path class="pin-outline" d="M37 3C18 3 5 17 5 36c0 22 17 40 32 53 15-13 32-31 32-53C69 17 56 3 37 3Z"/><path class="mountain" d="M16 39l15-13 8 7 10-10 12 14-12-8-10 10-8-7-15 7Z"/><path class="road" d="M19 69c12-14 24-18 31-27-3 14-12 22-20 31l7 8-9 2-9-14Z"/><path class="star" d="M21 17l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z"/></svg><span class="ts-wordmark"><b>TAYLOR SCOUT</b><small>PRODUCTION TOOLS</small></span></span></button><div class="top-actions"><span class="cloud-status" id="cloudStatus">${esc(cloudStatus)}</span><button class="btn dark" id="undoBtn">↶ Undo</button><div class="tool-switcher" aria-label="Connected tools"><button class="tool-tab active" id="calendarToolBtn">Calendar</button><button class="tool-tab" id="budgetToolBtn">Budget</button><button class="tool-tab" id="bibleToolBtn">Bible</button></div><button class="btn dark" id="printBtn">⎙ Print 11×17</button><button class="btn primary" id="saveBtn">Save</button></div></header><main class="main"><section class="hero calendar-hero"><div class="calendar-hero-title"><div class="eyebrow">PREP / WRAP CALENDAR</div><h1>${esc(activeShowName)}</h1><p>${esc(state.sourceVersion)} · shared show calendar with automatic cloud saving</p></div><div class="toolbar">${filterToolbar()}</div><div class="calendar-commandbar"><button class="btn" id="todayBtn">Today</button><button class="btn" id="addEventBtn">＋ Assignment</button><button class="btn" id="quickNoteBtn">＋ Event</button><button class="btn" id="keysBtn">Keys${activeKeys.length?` (${activeKeys.length})`:''}</button><button class="btn" id="locationsBtn">Locations</button><button class="btn" id="moreBtn">More</button></div></section>
   ${calendarLegend()}${activeKeys.length||activeLocations.length||timelineLocation?`<div class="active-filter">Highlighting ${activeKeys.map(keyName).join(', ')}${activeKeys.length&&(activeLocations.length||timelineLocation)?' · ':''}${activeLocations.join(', ')}${timelineLocation?`Location timeline: ${esc(timelineLocation)}`:''} <button id="clearHighlight" class="mini-link">Clear</button></div>`:''}
   <section class="calendar-shell"><div class="weekday-row">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(x=>`<div class="weekday">${x}</div>`).join('')}</div>${renderWeeks()}</section>
   <div class="load-more"><button class="btn" id="moreWeeks">Show 4 More Weeks</button></div></main><div id="modalRoot"></div><div id="toast" class="toast hidden" aria-live="polite"></div></div>`;
