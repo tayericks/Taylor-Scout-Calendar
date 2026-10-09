@@ -198,3 +198,40 @@ button,input,select,textarea{font-family:var(--ts-font)!important;border-radius:
   .modal-backdrop{padding:12px!important}
   .modal-backdrop>.modal{max-height:calc(100dvh - 24px)}
 }
+
+
+/* v12 location identity color system */
+.calendar-color-legend{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  margin:0 2px 8px;
+  padding:7px 9px;
+  border:1px solid #d7e1e7;
+  border-radius:9px;
+  background:#fff;
+}
+.legend-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:26px;
+  padding:4px 8px;
+  border:1px solid #dbe4e9;
+  border-radius:999px;
+  background:#f8fafb;
+  color:#405b6d;
+  font-size:10px;
+  font-weight:750;
+}
+.legend-chip i{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--legend);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--legend) 70%,#000);
+}
+@media print{
+  .calendar-color-legend{display:none!important}
+}
