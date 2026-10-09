@@ -6,6 +6,7 @@ export const configured = Boolean(url && key);
 export const supabase = configured ? createClient(url, key, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:createSharedCookieStorage()}}) : null;
 export const getShowId = () => { const p = new URLSearchParams(location.search); return p.get('show') || p.get('showId') || ''; };
 export async function getSession(){ if(!configured) return null; const {data,error}=await supabase.auth.getSession(); if(error) throw error; return data.session; }
+export async function loadProductionSettings(showId){ if(!configured||!showId)return null; const {data,error}=await supabase.from('production_settings').select('season,production_company,logo_url,preferences').eq('show_id',showId).maybeSingle(); if(error) throw error; return data; }
 const calendarTokens=new Map();
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const scheduleOf=e=>({prep_start:e.prepStart||null,prep_end:e.prepEnd||null,shoot_start:e.shootStart||null,shoot_end:e.shootEnd||null,hold_start:e.holdStart||null,hold_end:e.holdEnd||null,strike_start:e.strikeStart||null,strike_end:e.strikeEnd||null});
