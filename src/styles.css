@@ -235,3 +235,78 @@ button,input,select,textarea{font-family:var(--ts-font)!important;border-radius:
 @media print{
   .calendar-color-legend{display:none!important}
 }
+
+
+/* Clean standalone calendar print */
+.calendar-print-header{display:none}
+@media print{
+  @page{size:17in 11in landscape;margin:.18in}
+  html,body{
+    width:auto!important;
+    height:auto!important;
+    margin:0!important;
+    padding:0!important;
+    overflow:visible!important;
+    background:#fff!important;
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  .topbar,
+  .hero,
+  .calendar-hero,
+  .calendar-commandbar,
+  .toolbar,
+  .active-filter,
+  .calendar-color-legend,
+  .load-more,
+  .event-actions,
+  .tool-switcher,
+  .top-actions,
+  .brand-home,
+  #modalRoot,
+  #toast{
+    display:none!important;
+  }
+  .app,
+  .main{
+    margin:0!important;
+    padding:0!important;
+    width:100%!important;
+    max-width:none!important;
+    background:#fff!important;
+  }
+  .calendar-print-header{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    height:.72in!important;
+    margin:0 0 .08in!important;
+    padding:0!important;
+    border:0!important;
+  }
+  .calendar-print-header img{
+    display:block!important;
+    max-height:.58in!important;
+    max-width:2.6in!important;
+    object-fit:contain!important;
+  }
+  .calendar-print-header strong{
+    font-size:18px!important;
+    color:#10283b!important;
+  }
+  .calendar-shell{
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    border:1px solid #222!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+  }
+  .weekday-row,.week{
+    width:100%!important;
+    min-width:0!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  }
+  .weekday-row{position:static!important;top:auto!important}
+}
